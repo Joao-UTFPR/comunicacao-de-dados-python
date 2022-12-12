@@ -1,4 +1,5 @@
 import tkinter as tk
+import re
 from crypt import crypt_message
 from codigo_de_linha import pst, inverse_pst
 from bin import str_to_bin, bin_to_string
@@ -12,7 +13,8 @@ def data_pipeline(message, frame):
     encrypted_message = crypt_message(message)
     bin_str = str_to_bin(encrypted_message)
     pst_message_list = pst([int(i) for i in bin_str])
-    pst_message_str = "".join([f"{str(i)} " for i in pst_message_list])
+    pst_message_str = re.sub("(.{32})", "\\1\n", "".join([f"{str(i)} " for i in pst_message_list]), 0, re.DOTALL)
+
     label_list = [
         tk.Label(master=frame, text=f"mensagem original: {message}"),
         tk.Label(master=frame, text=f"mensagem criptografada: {encrypted_message}"),
@@ -60,7 +62,7 @@ def main():
     frame = tk.Frame(master=window, width=100, height=100)
     frame.pack()
     server_button = tk.Button(
-        master=frame, text="server", width=50, command=lambda: server(frame)
+        master=frame, text="server", width=50, command=lambda: server(window)
     )
     client_button = tk.Button(
         master=frame, text="client", width=50, command=lambda: client_view(frame)
